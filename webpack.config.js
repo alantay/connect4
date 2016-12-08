@@ -15,8 +15,15 @@ module.exports = {
             loader: 'babel',
             query:{
                 presets: ['es2015','react']
+            }},
+            {
+                    test: /\.scss$/,
+                    loaders: ["style-loader", "css-loader", "sass-loader"]
             }
-        }]
+        ]
+    },
+    sassLoader: {
+      includePaths: [__dirname]
     },
     plugins: [
        new webpack.DefinePlugin({
@@ -24,6 +31,6 @@ module.exports = {
            'NODE_ENV': '"production"'
          }
        }),
-       new webpack.optimize.UglifyJsPlugin()
+      // new webpack.optimize.UglifyJsPlugin()
     ]
 };

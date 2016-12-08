@@ -1,0 +1,34 @@
+$hole-diameter: 60px;
+
+.board{
+	// background-color: blue;
+	display: inline-block;
+	width:auto;
+	height: auto;
+	overflow:hidden;
+}
+
+.square{
+	background-image: url('/assets/img/slot.png');
+	background-size: 100%;
+	width: $hole-diameter;
+	height: $hole-diameter;
+	float:left;
+	position: relative;
+	&.yellow{
+		background-color: yellow;
+	}
+	&.red{
+		background-color: red;
+	}
+}
+
+
+.square[data-col="0"]{
+	clear:both;
+	
+}
+
+.status{
+	font-size: 2em;
+}
