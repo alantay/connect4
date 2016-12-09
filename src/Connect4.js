@@ -29,6 +29,17 @@ const aiLose = [
     "You didn't Win, I let you win to save you from self-pity."
 ];
 
+const aiTurn = [
+    "My turn. Let me see....",
+    "My turn. Hmmm...how do I make a fool of you...."
+]
+
+const playerTurn = [
+    "Your turn loser.",
+    "You turn. Make it quick Human"
+]
+
+let status = '';
 
 const disableAI = false;
 const boardStateArr= [6][7]
@@ -147,16 +158,20 @@ class Connect4 extends React.Component{
        gameOver || disableAI || this.aiTurn()
     }
     aiTurn(){
-
+        
         const history = this.state.history
         const stepNumber = this.state.stepNumber
         const boardState = history[stepNumber].boardState
         let gameOver = false;
+        status = aiTurn[Math.floor(Math.random() * aiTurn.length)];
+
         setTimeout(()=> {
-            const result = minimax(boardState,false,4);
+            const result = minimax(boardState,false,5);
             const bestMove = result.bestMove;
-            // console.log(result);
+
+            status = playerTurn[Math.floor(Math.random() * playerTurn.length)];
             boardState[bestMove.r][bestMove.c]= {filled:"yellow"};
+
              if(this.checkWin(boardState)){
                gameOver = true;
             }
@@ -224,7 +239,7 @@ class Connect4 extends React.Component{
         const stepNumber =  this.state.stepNumber
         const boardState = history[stepNumber].boardState;
         const gameOver = this.state.gameOver;
-        let status = '';
+        
         if(gameOver){
             // status = 'Game Over';
             if(this.state.redIsNext) 
