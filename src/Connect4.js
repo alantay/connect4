@@ -166,7 +166,7 @@ class Connect4 extends React.Component{
         status = aiTurn[Math.floor(Math.random() * aiTurn.length)];
 
         setTimeout(()=> {
-            const result = minimax(boardState,false,5);
+            const result = minimax(boardState,false,4);
             const bestMove = result.bestMove;
 
             status = playerTurn[Math.floor(Math.random() * playerTurn.length)];
@@ -223,6 +223,7 @@ class Connect4 extends React.Component{
     }
 
     resetGame(){
+        status = '';
         this.setState({
             history: [{
                 boardState: this.createEmptyBoard()
