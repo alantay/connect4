@@ -2,6 +2,31 @@ import React from 'react';
 import minimax from './Minimax'
 import lines from './Line'
 
+
+const aiStartStr = [
+    "My puny brain cannot handle this, AI go first.",
+    "I'm having a existential crisis. AI can start first.",
+    "Let AI go first, I'm gonna lose either way."
+];
+
+const aiWin = [
+    "Evolution does not apply for your brain i guess.",
+    "Sorry for your caveman intelligence. Go hunting yo.",
+    "LOL. NOOB! EASY GAME."
+];
+
+const aiDraw = [
+    "Yea this is the furthest you can go. A draw.",
+    "Next time, try winning... you wouldn't cut it with a draw.",
+    "You couldn't even win an AI built with just a few line of codes?"
+];
+
+const aiLose = [
+    "You just got lucky. I wasn't even trying.",
+    "You just got lucky. I wasn't even trying.",
+];
+
+
 const disableAI = false;
 const boardStateArr= [6][7]
 
@@ -201,14 +226,22 @@ class Connect4 extends React.Component{
         const gameOver = this.state.gameOver;
         let status = '';
         if(gameOver){
-            status = 'Game Over';
+            // status = 'Game Over';
+            if(this.state.redIsNext) 
+                status = aiWin[Math.floor(Math.random() * aiWin.length)];
+            else
+                status = aiLose[Math.floor(Math.random() * aiLose.length)];
+
         }
 
         return(
             <div>
                 <Board boardState= {boardState} onMouseEnter= {(r,c)=> this.handleMouseEnter(r,c)} onClick = {(r,c) => this.handleClick(r,c)}/>
                 <div className="status">{status}</div>
-                <button role="button" type="button" onClick={()=>this.resetGame()}>Reset</button>
+                <button className={(history.length>1)?"hide":""} role="button" type="button" onClick={()=>this.aiTurn()}>
+                    {aiStartStr[Math.floor(Math.random() * aiStartStr.length)]}
+                </button>
+                <button className={(history.length>1)?"":"hide"} role="button" type="button" onClick={()=>this.resetGame()}>Reset</button>
             </div>
 
         )
