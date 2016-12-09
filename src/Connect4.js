@@ -126,19 +126,23 @@ class Connect4 extends React.Component{
         const history = this.state.history
         const stepNumber = this.state.stepNumber
         const boardState = history[stepNumber].boardState
-        
+        let gameOver = false;
         setTimeout(()=> {
             const result = minimax(boardState,false,4);
             const bestMove = result.bestMove;
             // console.log(result);
             boardState[bestMove.r][bestMove.c]= {filled:"yellow"};
+             if(this.checkWin(boardState)){
+               gameOver = true;
+            }
            
             this.setState({
                 history: history.concat([{
                     boardState
                 }]),
                 redIsNext: true,
-                stepNumber: stepNumber + 1
+                stepNumber: stepNumber + 1,
+                gameOver: gameOver
             })
         },0);
         
@@ -195,6 +199,7 @@ class Connect4 extends React.Component{
         const stepNumber =  this.state.stepNumber
         const boardState = history[stepNumber].boardState;
         const gameOver = this.state.gameOver;
+        let status = '';
         if(gameOver){
             status = 'Game Over';
         }
