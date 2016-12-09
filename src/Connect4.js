@@ -1,16 +1,9 @@
 import React from 'react';
 import minimax from './Minimax'
+import lines from './Line'
 
+const disableAI = false;
 const boardStateArr= [6][7]
-const diagonals = [
-    [{r:0,c:0}, {r:1,c:1},{r:2,c:2},{r:3,c:3},{r:4,c:4},{r:5,c:5}],
-    [{r:1,c:0}, {r:2,c:1},{r:3,c:2},{r:4,c:3},{r:5,c:4}],
-    [{r:2,c:0}, {r:2,c:1},{r:3,c:2},{r:4,c:3}],
-
-    [{r:0,c:6}, {r:1,c:5},{r:2,c:4},{r:3,c:3},{r:4,c:2},{r:5,c:1}],
-    [{r:1,c:6}, {r:2,c:5},{r:3,c:4},{r:4,c:3},{r:5,c:2}],
-    [{r:2,c:6}, {r:3,c:5},{r:4,c:4},{r:5,c:3}],
-];
 
 function Square(props){
     return(
@@ -47,10 +40,28 @@ function coin(props){
     )
 }
 
+function createEmptyBoard(){
+
+}
+
+
+
+
 class Connect4 extends React.Component{
     constructor() {
         super();
         
+        this.state = {
+            history: [{
+                boardState: this.createEmptyBoard()
+            }],
+            redIsNext: true,
+            stepNumber: 0,
+            gameOver: false
+        };
+    }
+
+    createEmptyBoard(){
         const mArr = [];        
         for(let row = 0;row < 6; row++){
             mArr.push([])
@@ -58,14 +69,7 @@ class Connect4 extends React.Component{
                 mArr[row].push(null);
             }
         }
-
-        this.state = {
-            history: [{
-                squares: mArr
-            }],
-            redIsNext: true,
-            stepNumber: 0,
-        };
+        return mArr;
     }
 
     handleMouseEnter(r,c){
@@ -73,11 +77,12 @@ class Connect4 extends React.Component{
     }
 
     handleClick(r,c){
-       // if(!this.state.redIsNext) return
+        if(!this.state.redIsNext && !disableAI) return
+        if(this.state.gameOver) return;
 
         const history = this.state.history
         const stepNumber = this.state.stepNumber
-        const boardState = history[stepNumber].squares.slice()
+        const boardState = history[stepNumber].boardState
         let row = r
         let col = c
         let lastEmptyRow = null
@@ -98,97 +103,57 @@ class Connect4 extends React.Component{
     makeMove(r,c){
         const history = this.state.history
         const stepNumber = this.state.stepNumber
-        const boardState = history[stepNumber].squares.slice()
+        const boardState = history[stepNumber].boardState
+        let gameOver = false;
         boardState[r][c]={filled:this.state.redIsNext?'red':'yellow'}
-        this.checkWin(boardState);
+        // check if game
+        if(this.checkWin(boardState)){
+            gameOver = true;
+        }
 
         this.setState({
-            history: history.concat({squares:boardState}),
+            history: history.concat({boardState}),
             stepNumber: stepNumber + 1,
-            redIsNext: !this.state.redIsNext
+            redIsNext: !this.state.redIsNext,
+            gameOver: gameOver
         });
+      
 
-        this.aiTurn();
+       gameOver || disableAI || this.aiTurn()
     }
-    
     aiTurn(){
+
         const history = this.state.history
         const stepNumber = this.state.stepNumber
-        const boardState = history[stepNumber].squares.slice()
-        minimax(boardState,false,10);
+        const boardState = history[stepNumber].boardState
+        
         setTimeout(()=> {
-
-        })
+            const result = minimax(boardState,false,4);
+            const bestMove = result.bestMove;
+            // console.log(result);
+            boardState[bestMove.r][bestMove.c]= {filled:"yellow"};
            
+            this.setState({
+                history: history.concat([{
+                    boardState
+                }]),
+                redIsNext: true,
+                stepNumber: stepNumber + 1
+            })
+        },0);
+        
     }
 
     checkWin(boardState){
-
-        // row check for 4 in a row.
-        for(let row = 0;row < 6; row++){
+        // Check lines
+        for(let d=0;d < lines.length; d++){
             let redSeq = null;
             let yellowSeq = null;
             let previousSeq = null;
-            for(let col = 0; col < 7; col++){
-
-                if(boardState[row][col] == null){
-                    redSeq = 0;
-                    yellowSeq = 0;
-                    continue;
-                }
-                if(boardState[row][col].filled == 'red'){
-                    yellowSeq = 0;
-                    previousSeq = 'red';
-                    redSeq++;
-                }
-                if(boardState[row][col].filled == 'yellow'){
-                    redSeq = 0;
-                    previousSeq = 'yellow';
-                    yellowSeq++;
-                }
-                if(redSeq == 4 || yellowSeq == 4){
-                    return true;
-                }
-            }
-        }
-
-        
-        // col check for 4 in a col
-        for(let col = 0;col < 7; col++){
-            let redSeq = null;
-            let yellowSeq = null;
-            let previousSeq = null;
-            for(let row = 0; row < 6; row++){
-                if(boardState[row][col] == null){
-                    redSeq = 0;
-                    yellowSeq = 0;
-                    continue;
-                }
-                if(boardState[row][col].filled == 'red'){
-                    yellowSeq = 0;
-                    previousSeq = 'red';
-                    redSeq++;
-                }
-                if(boardState[row][col].filled == 'yellow'){
-                    redSeq = 0;
-                    previousSeq = 'yellow';
-                    yellowSeq++;
-                }
-                if(redSeq == 4 || yellowSeq == 4){
-                    return true;
-                }
-            }
-        }
-
-        // Check diagonals
-        for(let d=0;d < diagonals.length; d++){
-            let redSeq = null;
-            let yellowSeq = null;
-            let previousSeq = null;
-            var diaSeq = diagonals[d];
-            for(let s=0; s<diaSeq.length;s++){
-                let row = diaSeq[s].r;
-                let col = diaSeq[s].c;
+            var lineSeq = lines[d];
+            for(let s=0; s<lineSeq.length;s++){
+                let row = lineSeq[s].r;
+                let col = lineSeq[s].c;
                 
                 if(boardState[row][col] == null){
                     redSeq = 0;
@@ -213,21 +178,32 @@ class Connect4 extends React.Component{
         return false;
     }
 
+    resetGame(){
+        this.setState({
+            history: [{
+                boardState: this.createEmptyBoard()
+            }],
+            redIsNext: true,
+            stepNumber: 0,
+            gameOver: false
+        });
+
+    }
+
     render(){
         const history = this.state.history
         const stepNumber =  this.state.stepNumber
-        const boardState = history[stepNumber].squares.slice();
-
-        const winner = this.checkWin(boardState)
-        if(winner){
-            status = "Game Over";
+        const boardState = history[stepNumber].boardState;
+        const gameOver = this.state.gameOver;
+        if(gameOver){
+            status = 'Game Over';
         }
-
 
         return(
             <div>
                 <Board boardState= {boardState} onMouseEnter= {(r,c)=> this.handleMouseEnter(r,c)} onClick = {(r,c) => this.handleClick(r,c)}/>
                 <div className="status">{status}</div>
+                <button role="button" type="button" onClick={()=>this.resetGame()}>Reset</button>
             </div>
 
         )
