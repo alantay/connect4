@@ -1,7 +1,8 @@
 $hole-diameter: 60px;
+$hole-diameter-mobile: 40px;
+
 
 .board{
-	// background-color: blue;
 	display: inline-block;
 	width:auto;
 	height: auto;
@@ -11,8 +12,14 @@ $hole-diameter: 60px;
 .square{
 	background-image: url('./assets/img/slot.png');
 	background-size: 100%;
-	width: $hole-diameter;
-	height: $hole-diameter;
+	width: $hole-diameter-mobile;
+	height: $hole-diameter-mobile;
+	@media (min-width: 481px) {
+		width: $hole-diameter;
+		height: $hole-diameter;
+	}
+	
+	
 	float:left;
 	position: relative;
 	&.yellow{

@@ -6,12 +6,14 @@ import lines from './Line'
 const aiStartStr = [
     "My puny brain cannot handle this, AI go first.",
     "I'm having a existential crisis. AI can start first.",
-    "Let AI go first, I'm gonna lose either way."
+    "Let AI go first, I'm gonna lose either way.",
+    "Sir... me skurdd...Sir you go first..."
 ];
 
 const aiWin = [
     "Evolution does not apply for your brain i guess.",
     "Sorry for your caveman intelligence. Go hunting yo.",
+    "You might want to go get your IQ tested. You might be Special",
     "LOL. NOOB! EASY GAME."
 ];
 
@@ -23,7 +25,8 @@ const aiDraw = [
 
 const aiLose = [
     "You just got lucky. I wasn't even trying.",
-    "You just got lucky. I wasn't even trying.",
+    "Yea you win... big deal?",
+    "You didn't Win, I let you win to save you from self-pity."
 ];
 
 
