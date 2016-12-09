@@ -13,7 +13,7 @@ const aiStartStr = [
 const aiWin = [
     "Evolution does not apply for your brain i guess.",
     "Sorry for your caveman intelligence. Go hunting yo.",
-    "You might want to go get your IQ tested. You might be Special",
+    "Dumbarse! You might want to go get your IQ tested.",
     "LOL. NOOB! EASY GAME."
 ];
 
@@ -71,9 +71,6 @@ function coin(props){
 function createEmptyBoard(){
 
 }
-
-
-
 
 class Connect4 extends React.Component{
     constructor() {

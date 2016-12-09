@@ -19,8 +19,8 @@ function minimax(boardState,isRed, depth){
 	
 	let bestMove = null;
 	let bestScore = isRed? Number.MAX_SAFE_INTEGER : Number.MIN_SAFE_INTEGER
-	if(possibleMoves.length == 0 || depth == 0) {
-		//console.log(evalBoard(boardState));
+	if(possibleMoves.length == 0 || depth == 0 || checkWin(boardState)) {
+		// console.log(evalBoard(boardState));
 		return {bestMove:null,bestScore: evalBoard(boardState)}
 	}
 
@@ -151,6 +151,40 @@ function evalBoard(boardState){
 
 
 	return score;
+}
+
+function checkWin(boardState){
+    // Check lines
+    for(let d=0;d < lines.length; d++){
+        let redSeq = null;
+        let yellowSeq = null;
+        let previousSeq = null;
+        var lineSeq = lines[d];
+        for(let s=0; s<lineSeq.length;s++){
+            let row = lineSeq[s].r;
+            let col = lineSeq[s].c;
+            
+            if(boardState[row][col] == null){
+                redSeq = 0;
+                yellowSeq = 0;
+                continue;
+            }
+            if(boardState[row][col].filled == 'red'){
+                yellowSeq = 0;
+                previousSeq = 'red';
+                redSeq++;
+            }
+            if(boardState[row][col].filled == 'yellow'){
+                redSeq = 0;
+                previousSeq = 'yellow';
+                yellowSeq++;
+            }
+            if(redSeq == 4 || yellowSeq == 4){
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 export default minimax;
