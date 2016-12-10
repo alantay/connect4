@@ -11,7 +11,7 @@ const aiStartStr = [
 ];
 
 const aiWin = [
-    "Evolution does not apply for your brain i guess.",
+    "Evolution does not apply for your brain I guess.",
     "Sorry for your caveman intelligence. Go hunting yo.",
     "Dumbarse! You might want to go get your IQ tested.",
     "LOL. NOOB! EASY GAME."
@@ -25,7 +25,7 @@ const aiDraw = [
 
 const aiLose = [
     "You just got lucky. I wasn't even trying.",
-    "Yea you win... big deal?",
+    "Yea you win... big deal? Fight me again!",
     "You didn't Win, I let you win to save you from self-pity."
 ];
 
@@ -35,8 +35,9 @@ const aiTurn = [
 ]
 
 const playerTurn = [
-    "Your turn loser.",
-    "You turn. Make it quick Human"
+    "It's your turn weakling.",
+    "Your turn. Make it quick Human",
+    "Stop dreaming and make your move."
 ]
 
 let status = '';
