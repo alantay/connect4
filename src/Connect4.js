@@ -41,32 +41,49 @@ const playerTurn = [
 ]
 
 let status = '';
-
 const disableAI = false;
-const boardStateArr= [6][7]
 
 function Square(props){
     return(
         <div className= {props.className} data-row={props.row} data-col={props.col} 
             onClick={()=>props.onClick()} onMouseEnter={()=> props.onMouseEnter()}>
+            <img src="./assets/img/slot.svg" alt=""/>
+            <Coin></Coin>
         </div>
     );
 }
 
+function Coin(props){
+    return(
+        <div className="coin animated bounceInDown"></div>
+    );
+}
 
 function Board(props){
     let squares =[];
     let boardState = props.boardState;
+    let winningPieces = props.winningPieces;
     
     for(let row = 0; row < 6; row++){
         for(let col = 0; col < 7; col++){
-            let className = (boardState[row][col])? "square "+boardState[row][col].filled: "square ";
-                squares.push(<Square row={row} col={col} 
-                    className={className} 
-                    onMouseEnter={()=> props.onMouseEnter(row,col)} 
-                    onClick={()=>props.onClick(row,col)}/>);
+            
+            let className = (boardState[row][col])? "square " + boardState[row][col].filled: "square ";
+            if(winningPieces){
+                for(let p = 0; p<winningPieces.length; p++){
+                    let wp = winningPieces[p];
+                    if(wp.r == row && wp.c == col){
+                        className += ' win';
+                    }
+                }  
+            }
+
+            squares.push(<Square row={row} col={col}
+                className={className} 
+                onMouseEnter={()=> props.onMouseEnter(row,col)} 
+                onClick={()=>props.onClick(row,col)}/>);
         }            
     }
+    
     return(
         <div className="board">
         {squares} 
@@ -94,7 +111,8 @@ class Connect4 extends React.Component{
             }],
             redIsNext: true,
             stepNumber: 0,
-            gameOver: false
+            gameOver: false,
+            winningPieces: null
         };
     }
 
@@ -144,7 +162,8 @@ class Connect4 extends React.Component{
         let gameOver = false;
         boardState[r][c]={filled:this.state.redIsNext?'red':'yellow'}
         // check if game
-        if(this.checkWin(boardState)){
+        const checkWinHolder = this.checkWin(boardState);
+        if(checkWinHolder){
             gameOver = true;
         }
 
@@ -152,7 +171,8 @@ class Connect4 extends React.Component{
             history: history.concat({boardState}),
             stepNumber: stepNumber + 1,
             redIsNext: !this.state.redIsNext,
-            gameOver: gameOver
+            gameOver: gameOver,
+            winningPieces : gameOver? checkWinHolder:this.state.winningPieces
         });
       
 
@@ -172,9 +192,10 @@ class Connect4 extends React.Component{
 
             status = playerTurn[Math.floor(Math.random() * playerTurn.length)];
             boardState[bestMove.r][bestMove.c]= {filled:"yellow"};
-
-             if(this.checkWin(boardState)){
-               gameOver = true;
+            
+            const checkWinHolder = this.checkWin(boardState);
+            if(checkWinHolder){
+                gameOver = true;
             }
            
             this.setState({
@@ -183,7 +204,8 @@ class Connect4 extends React.Component{
                 }]),
                 redIsNext: true,
                 stepNumber: stepNumber + 1,
-                gameOver: gameOver
+                gameOver: gameOver,
+                winningPieces : gameOver? checkWinHolder:this.state.winningPieces
             })
         },0);
         
@@ -195,7 +217,9 @@ class Connect4 extends React.Component{
             let redSeq = null;
             let yellowSeq = null;
             let previousSeq = null;
-            var lineSeq = lines[d];
+            let lineSeq = lines[d];
+            let yellowPieces = [];
+            let redPieces = [];
             for(let s=0; s<lineSeq.length;s++){
                 let row = lineSeq[s].r;
                 let col = lineSeq[s].c;
@@ -203,20 +227,28 @@ class Connect4 extends React.Component{
                 if(boardState[row][col] == null){
                     redSeq = 0;
                     yellowSeq = 0;
+                    yellowPieces=[];
+                    redPieces = [];
                     continue;
                 }
                 if(boardState[row][col].filled == 'red'){
                     yellowSeq = 0;
+                    yellowPieces = []
                     previousSeq = 'red';
+                    redPieces.push({r:row, c:col})
                     redSeq++;
                 }
                 if(boardState[row][col].filled == 'yellow'){
                     redSeq = 0;
-                    previousSeq = 'yellow';
+                    redPieces = []
+                    previousSeq = 'yellow'
+                    yellowPieces.push({r:row, c:col})
                     yellowSeq++;
                 }
-                if(redSeq == 4 || yellowSeq == 4){
-                    return true;
+                if(yellowPieces.length == 4 || redPieces.length == 4){
+                    // console.log(yellowPieces,redPieces)
+
+                    return (yellowPieces.length>0)? yellowPieces : redPieces;
                 }
             }
         }
@@ -231,7 +263,8 @@ class Connect4 extends React.Component{
             }],
             redIsNext: true,
             stepNumber: 0,
-            gameOver: false
+            gameOver: false,
+            winningPieces: null
         });
 
     }
@@ -248,12 +281,11 @@ class Connect4 extends React.Component{
                 status = aiWin[Math.floor(Math.random() * aiWin.length)];
             else
                 status = aiLose[Math.floor(Math.random() * aiLose.length)];
-
         }
 
         return(
             <div>
-                <Board boardState= {boardState} onMouseEnter= {(r,c)=> this.handleMouseEnter(r,c)} onClick = {(r,c) => this.handleClick(r,c)}/>
+                <Board boardState= {boardState} winningPieces={this.state.winningPieces} onMouseEnter= {(r,c)=> this.handleMouseEnter(r,c)} onClick = {(r,c) => this.handleClick(r,c)}/>
                 <div className="status">{status}</div>
                 <button className={(history.length>1)?"hide":""} role="button" type="button" onClick={()=>this.aiTurn()}>
                     {aiStartStr[Math.floor(Math.random() * aiStartStr.length)]}
