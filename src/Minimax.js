@@ -14,11 +14,11 @@ const redStrSeq = [
 	"2220"
 ]
 
-function minimax(boardState,isRed, depth){
+function minimax(boardState,isRed, depth, alpha, beta){
 	let possibleMoves = findPossibleMoves(boardState);	
 	
 	let bestMove = null;
-	let bestScore = isRed? Number.MAX_SAFE_INTEGER : Number.MIN_SAFE_INTEGER
+	//let bestScore = isRed? Number.MAX_SAFE_INTEGER : Number.MIN_SAFE_INTEGER
 	if(possibleMoves.length == 0 || depth == 0 || checkWin(boardState)) {
 		// console.log(evalBoard(boardState));
 		return {bestMove:null,bestScore: evalBoard(boardState)}
@@ -33,9 +33,9 @@ function minimax(boardState,isRed, depth){
 			
 			let tempSlot = boardState.slice(0);	
 			tempSlot[row][col] = {filled:'yellow'}
-			let result = minimax(tempSlot, true, depth-1);
-			if(result.bestScore > bestScore){
-				bestScore = result.bestScore;
+			let result = minimax(tempSlot, true, depth-1, alpha, beta);
+			if(result.bestScore > alpha){
+				alpha = result.bestScore;
 				bestMove = {r:row, c:col}
 			}	
 			tempSlot[row][col] = null;	
@@ -48,16 +48,17 @@ function minimax(boardState,isRed, depth){
 			
 			let tempSlot = boardState.slice(0);	
 			tempSlot[row][col] = {filled:'red'}
-			let result = minimax(tempSlot, false, depth-1);
-			if(result.bestScore < bestScore){
-				bestScore = result.bestScore;
+			let result = minimax(tempSlot, false, depth-1, alpha, beta);
+			if(result.bestScore < beta){
+				beta = result.bestScore;
 				bestMove = {r:row, c:col}
 			}	
 			tempSlot[row][col] = null;	
 		}
+        if(alpha>=beta) break;
 	}
 	
-	return { bestMove, bestScore }
+	return { bestMove, bestScore:(isRed ? beta:alpha)}
 }
 
 function findPossibleMoves(boardState){

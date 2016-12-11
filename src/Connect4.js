@@ -167,7 +167,7 @@ class Connect4 extends React.Component{
         status = aiTurn[Math.floor(Math.random() * aiTurn.length)];
 
         setTimeout(()=> {
-            const result = minimax(boardState,false,4);
+            const result = minimax(boardState,false,6, Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER);
             const bestMove = result.bestMove;
 
             status = playerTurn[Math.floor(Math.random() * playerTurn.length)];
